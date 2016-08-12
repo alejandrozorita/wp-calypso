@@ -10,6 +10,7 @@ import {
 	debounce,
 	defer,
 	find,
+	isEmpty,
 	mapValues,
 	omit,
 	property,
@@ -51,6 +52,7 @@ const contextTypes = Object.freeze( {
 	next: PropTypes.func.isRequired,
 	quit: PropTypes.func.isRequired,
 	isValid: PropTypes.func.isRequired,
+	isLastStep: PropTypes.bool.isRequired,
 	tour: PropTypes.string.isRequired,
 	tourVersion: PropTypes.string.isRequired,
 	sectionName: PropTypes.string.isRequired,
@@ -58,6 +60,11 @@ const contextTypes = Object.freeze( {
 	step: PropTypes.string.isRequired,
 	lastAction: PropTypes.object,
 } );
+
+const objFirst = ( obj ) => {
+	const key = Object.keys( obj )[ 0 ];
+	return key && obj[ key ];
+};
 
 export class Tour extends Component {
 	static propTypes = {
@@ -126,6 +133,12 @@ export class Step extends Component {
 	componentWillUnmount() {
 		global.window.removeEventListener( 'resize', this.onScrollOrResize );
 		this.scrollContainer.removeEventListener( 'scroll', this.onScrollOrResize );
+
+		const { quit, step, tour, tourVersion, isLastStep } = this.context;
+		if ( isLastStep ) {
+			debug( 'Auto-quitting after last step' );
+			quit( { step, tour, tour_version: tourVersion, isLastStep } );
+		}
 	}
 
 	/*
@@ -202,9 +215,11 @@ export class Step extends Component {
 	}
 
 	skipIfInvalidContext( props, context ) {
-		const { when, next } = props;
-		if ( when && ! context.isValid( when ) ) {
-			this.context.next( this.tour, next );
+		const { when } = props;
+		const { branching, isValid, step, tour, tourVersion } = context;
+		if ( when && ! isValid( when ) ) {
+			const nextStepName = objFirst( branching[ step ] );
+			context.next( { tour, tourVersion, nextStepName, doNotTrack: true } );
 		}
 	}
 
@@ -268,7 +283,9 @@ export class Next extends Component {
 	}
 
 	onClick = () => {
-		this.context.next( this.context.tour, this.props.step );
+		const { next, tour, tourVersion } = this.context;
+		const { step: nextStepName } = this.props;
+		next( { tour, tourVersion, nextStepName } );
 	}
 
 	render() {
@@ -295,7 +312,8 @@ export class Quit extends Component {
 
 	onClick = ( event ) => {
 		this.props.onClick && this.props.onClick( event );
-		this.context.quit();
+		const { quit, tour, tourVersion, step, isLastStep } = this.context;
+		quit( { tour, tourVersion, step, isLastStep } );
 	}
 
 	render() {
@@ -350,7 +368,7 @@ export class Continue extends Component {
 	quitIfInvalidRoute( props ) {
 		debug( 'Continue.quitIfInvalidRoute' );
 		defer( () => {
-			const quit = this.context.quit;
+			const { quit } = this.context;
 			const target = targetForSlug( props.target );
 			// quit if we have a target but cant find it
 			if ( props.target && ! target ) {
@@ -363,7 +381,9 @@ export class Continue extends Component {
 	}
 
 	onContinue = () => {
-		this.context.next( this.context.tour, this.props.step );
+		const { tour, tourVersion } = this.context;
+		const { step: nextStepName } = this.props;
+		this.context.next( { tour, tourVersion, nextStepName } );
 	}
 
 	addTargetListener() {
@@ -442,14 +462,29 @@ export const makeTour = tree => {
 		}
 
 		setTourMeta( props ) {
-			const { isValid, lastAction, next, quit, sectionName, shouldPause, stepName } = props;
+			const {
+				isValid,
+				lastAction,
+				next,
+				quit,
+				sectionName,
+				shouldPause,
+				stepName,
+			} = props;
+			const step = stepName;
+			const branching = tourBranching( tree );
 			this.tourMeta = {
 				next, quit, isValid, lastAction, sectionName, shouldPause,
-				step: stepName,
-				branching: tourBranching( tree ),
+				step,
+				branching,
+				isLastStep: this.isLastStep( { step, branching } ),
 				tour: tree.props.name,
 				tourVersion: tree.props.version,
 			};
+		}
+
+		isLastStep( { step, branching } ) {
+			return isEmpty( branching[ step ] );
 		}
 
 		render() {

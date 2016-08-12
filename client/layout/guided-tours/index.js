@@ -9,6 +9,7 @@ import { defer } from 'lodash';
 /**
  * Internal dependencies
  */
+import { tracks } from 'lib/analytics';
 import AllTours from 'layout/guided-tours/config';
 import QueryPreferences from 'components/data/query-preferences';
 import RootChild from 'components/root-child';
@@ -22,24 +23,35 @@ class GuidedTours extends Component {
 		return this.props.tourState !== nextProps.tourState;
 	}
 
-	next = ( tour, nextStepName ) => {
+	next = ( { tour, tourVersion, nextStepName, doNotTrack = false } ) => {
+		if ( ! doNotTrack ) {
+			tracks.recordEvent( 'calypso_guided_tours_next', {
+				tour,
+				step: nextStepName,
+				tour_version: tourVersion,
+			} );
+		}
+
 		defer( () => {
 			this.props.nextGuidedTourStep( {
+				tour,
 				stepName: nextStepName,
-				tour: tour,
 			} );
 		} );
 	}
 
-	quit = ( options = {} ) => {
-		this.props.quitGuidedTour( Object.assign( {
-			stepName: this.props.tourState.stepName,
-			tour: this.props.tourState.tour,
-		}, options ) );
-	}
+	quit = ( { step, tour, tourVersion, isLastStep } ) => {
+		tracks.recordEvent( `calypso_guided_tours_${ isLastStep ? 'finished' : 'quit' }`, {
+			step,
+			tour,
+			tour_version: tourVersion,
+		} );
 
-	finish = () => {
-		this.quit( { finished: true } );
+		this.props.quitGuidedTour( {
+			tour,
+			stepName: this.props.tourState.stepName,
+			finished: isLastStep,
+		} );
 	}
 
 	render() {
