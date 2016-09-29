@@ -23,14 +23,20 @@ class GuidedTours extends Component {
 		return this.props.tourState !== nextProps.tourState;
 	}
 
-	next = ( { tour, tourVersion, nextStepName, doNotTrack = false } ) => {
-		if ( ! doNotTrack ) {
+	next = ( { tour, tourVersion, nextStepName, skipping = false } ) => {
+		// Don't immediately record the transition to the next step. Instead,
+		// remember the name of the step and _maybe_ record it later (at the
+		// next invokation of `next` or `quit`), depending on whether the step
+		// was skipped (see Step#skipIfInvalidContext).
+		if ( ! skipping && this.currentStepName ) {
 			tracks.recordEvent( 'calypso_guided_tours_next', {
 				tour,
-				step: nextStepName,
+				step: this.currentStepName,
 				tour_version: tourVersion,
 			} );
 		}
+
+		this.currentStepName = nextStepName;
 
 		defer( () => {
 			this.props.nextGuidedTourStep( {
@@ -41,6 +47,15 @@ class GuidedTours extends Component {
 	}
 
 	quit = ( { step, tour, tourVersion, isLastStep } ) => {
+		if ( this.currentStepName ) {
+			tracks.recordEvent( 'calypso_guided_tours_next', {
+				tour,
+				step: this.currentStepName,
+				tour_version: tourVersion,
+			} );
+			this.currentStepName = null;
+		}
+
 		tracks.recordEvent( `calypso_guided_tours_${ isLastStep ? 'finished' : 'quit' }`, {
 			step,
 			tour,
