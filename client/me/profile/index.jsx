@@ -16,6 +16,7 @@ import FormFieldset from 'components/forms/form-fieldset';
 import FormLabel from 'components/forms/form-label';
 import FormTextInput from 'components/forms/form-text-input';
 import FormTextarea from 'components/forms/form-textarea';
+import GravatarUpdater from 'me/gravatar-updater';
 import ProfileLinks from 'me/profile-links';
 import userProfileLinks from 'lib/user-profile-links';
 import ReauthRequired from 'me/reauth-required';
@@ -75,6 +76,8 @@ export default React.createClass( {
 							}
 						) }
 					</p>
+
+					<GravatarUpdater />
 
 					<form onSubmit={ this.submitForm } onChange={ this.markChanged }>
 						<FormFieldset>
