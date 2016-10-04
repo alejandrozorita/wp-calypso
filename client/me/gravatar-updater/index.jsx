@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { connect } from 'react-redux';
+import request from 'superagent';
 
 /**
  * Internal dependencies
@@ -33,27 +34,17 @@ export class GravatarUpdater extends React.Component {
 			data.append( 'filedata', files[0] );
 			data.append( 'account', this.props.user.email );
 
-			const obj = {
-				method: 'POST',
-				headers: {
-					'Authorization': 'Bearer ' + bearerToken,
-					'Accept-Language': '*'
-				},
-				body: data,
-			};
-
-		fetch( 'https://api.gravatar.com/v1/upload-image', obj )
-			.then( function ( result ) {
-				if ( result.ok ) {
-					return result.json();
-				}
-			} )
-			.then( function ( result ) {
-				console.log( 'fetch result', result );
-			} )
-			.catch( function ( error ) {
-				console.log( 'error', error );
-			} );
+			request
+				.post( 'https://api.gravatar.com/v1/upload-image' )
+				.send( data )
+				.set( 'Authorization', 'Bearer ' + bearerToken )
+				.set( 'Accept-Language', '*' )
+				.then( function ( result ) {
+					console.log( 'result', result );
+				} )
+				.catch( function ( error ) {
+					console.log( 'error', error );
+				} );
 		} else {
 			console.log( 'Oops - no bearer token.' );
 		}
