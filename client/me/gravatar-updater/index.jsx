@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import request from 'superagent';
 
@@ -15,7 +15,16 @@ import { getCurrentUser } from 'state/current-user/selectors';
 import Gravatar from 'components/gravatar';
 import * as OAuthToken from 'lib/oauth-token';
 
-export class GravatarUpdater extends React.Component {
+export class GravatarUpdater extends Component {
+	constructor() {
+		super();
+		this.handleOnPick = this.handleOnPick.bind( this );
+	}
+
+	static propTypes = {
+		user: PropTypes.object,
+	};
+
 	handleOnPick( files ) {
 		console.log( 'you picked',  JSON.stringify( files[0].name ) );
 
@@ -62,19 +71,16 @@ export class GravatarUpdater extends React.Component {
 				<p>
 					To change, select an image or drag and drop a picture from your computer.
 				</p>
-				<FilePicker accept="image/*" onPick={ this.handleOnPick.bind( this ) }>
+				<FilePicker accept="image/*" onPick={ this.handleOnPick }>
 					<Button>Select Image</Button>
 				</FilePicker>
 			</div>
 		);
 	}
 }
-GravatarUpdater.propTypes = { user: React.PropTypes.object };
 
-function mapStateToProps( state ) {
-	return {
-		user: getCurrentUser( state ),
-	};
-}
-
-export default connect( mapStateToProps )( GravatarUpdater );
+export default connect(
+	state => ( {
+		user: getCurrentUser( state )
+	} )
+)( GravatarUpdater );
