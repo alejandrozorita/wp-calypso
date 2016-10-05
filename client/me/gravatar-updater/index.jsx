@@ -13,6 +13,7 @@ import FilePicker from 'components/file-picker';
 import FormLabel from 'components/forms/form-label';
 import { getCurrentUser } from 'state/current-user/selectors';
 import Gravatar from 'components/gravatar';
+import { localize } from 'i18n-calypso';
 import * as OAuthToken from 'lib/oauth-token';
 
 export class GravatarUpdater extends Component {
@@ -22,6 +23,7 @@ export class GravatarUpdater extends Component {
 	}
 
 	static propTypes = {
+		translate: React.PropTypes.func,
 		user: PropTypes.object,
 	};
 
@@ -62,17 +64,23 @@ export class GravatarUpdater extends Component {
 	render() {
 		return (
 			<div>
-				<FormLabel>Avatar</FormLabel>
+				<FormLabel>
+					{ this.props.translate( 'Avatar', {
+							comment: 'A section heading on the profile page.'
+						}
+					) }
+				</FormLabel>
 				<Gravatar
 					imgSize={ 270 }
 					size={ 100 }
 					user={ this.props.user }
 				/>
 				<p>
-					To change, select an image or drag and drop a picture from your computer.
+					{ this.props.translate( 'To change, select an image or ' +
+					'drag and drop a picture from your computer.' ) }
 				</p>
 				<FilePicker accept="image/*" onPick={ this.handleOnPick }>
-					<Button>Select Image</Button>
+					<Button>{ this.props.translate( 'Select Image' ) }</Button>
 				</FilePicker>
 			</div>
 		);
@@ -83,4 +91,4 @@ export default connect(
 	state => ( {
 		user: getCurrentUser( state )
 	} )
-)( GravatarUpdater );
+)( localize ( GravatarUpdater ) );
