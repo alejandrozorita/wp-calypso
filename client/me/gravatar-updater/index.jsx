@@ -80,7 +80,9 @@ export class GravatarUpdater extends Component {
 					'drag and drop a picture from your computer.' ) }
 				</p>
 				<FilePicker accept="image/*" onPick={ this.handleOnPick }>
-					<Button>{ this.props.translate( 'Select Image' ) }</Button>
+					<Button disabled={ this.props.user.email_verified }>
+						{ this.props.translate( 'Select Image' ) }
+					</Button>
 				</FilePicker>
 			</div>
 		);
