@@ -13,6 +13,7 @@ import FilePicker from 'components/file-picker';
 import FormLabel from 'components/forms/form-label';
 import { getCurrentUser } from 'state/current-user/selectors';
 import Gravatar from 'components/gravatar';
+import { isOffline } from 'state/application/selectors';
 import { localize } from 'i18n-calypso';
 import * as OAuthToken from 'lib/oauth-token';
 
@@ -23,6 +24,7 @@ export class GravatarUpdater extends Component {
 	}
 
 	static propTypes = {
+		isOffline: React.PropTypes.bool,
 		translate: React.PropTypes.func,
 		user: PropTypes.object,
 	};
@@ -62,10 +64,11 @@ export class GravatarUpdater extends Component {
 	}
 
 	render() {
+		const { isOffline, translate, user } = this.props;
 		return (
 			<div>
 				<FormLabel>
-					{ this.props.translate( 'Avatar', {
+					{ translate( 'Avatar', {
 							comment: 'A section heading on the profile page.'
 						}
 					) }
@@ -73,15 +76,15 @@ export class GravatarUpdater extends Component {
 				<Gravatar
 					imgSize={ 270 }
 					size={ 100 }
-					user={ this.props.user }
+					user={ user }
 				/>
 				<p>
-					{ this.props.translate( 'To change, select an image or ' +
+					{ translate( 'To change, select an image or ' +
 					'drag and drop a picture from your computer.' ) }
 				</p>
 				<FilePicker accept="image/*" onPick={ this.handleOnPick }>
-					<Button disabled={ this.props.user.email_verified }>
-						{ this.props.translate( 'Select Image' ) }
+					<Button disabled={ isOffline || ! user.email_verified }>
+						{ translate( 'Select Image' ) }
 					</Button>
 				</FilePicker>
 			</div>
@@ -91,6 +94,7 @@ export class GravatarUpdater extends Component {
 
 export default connect(
 	state => ( {
-		user: getCurrentUser( state )
+		user: getCurrentUser( state ),
+		isOffline: isOffline( state ),
 	} )
 )( localize ( GravatarUpdater ) );
