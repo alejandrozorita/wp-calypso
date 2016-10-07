@@ -2,6 +2,7 @@
  * External dependencies
  */
 import React, { Component, PropTypes } from 'react';
+import { bindActionCreators } from 'redux';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
 import request from 'superagent';
@@ -9,6 +10,7 @@ import request from 'superagent';
 /**
  * Internal dependencies
  */
+import { errorNotice, successNotice } from 'state/notices/actions';
 import Button from 'components/button';
 import FilePicker from 'components/file-picker';
 import FormLabel from 'components/forms/form-label';
@@ -33,6 +35,7 @@ export class GravatarUpdater extends Component {
 	};
 
 	handleOnPick( files ) {
+		const { errorNotice, successNotice, translate, user } = this.props;
 		console.log( 'you picked',  JSON.stringify( files[0].name ) );
 
 		// check for bearerToken from desktop app
@@ -51,7 +54,7 @@ export class GravatarUpdater extends Component {
 
 			const data = new FormData();
 			data.append( 'filedata', files[0] );
-			data.append( 'account', this.props.user.email );
+			data.append( 'account', user.email );
 			request
 				.post( 'https://api.gravatar.com/v1/upload-image' )
 				.send( data )
@@ -59,12 +62,18 @@ export class GravatarUpdater extends Component {
 				.set( 'Accept-Language', '*' )
 				.then( result => {
 					console.log( 'result', result );
+
+					successNotice( translate( 'New Gravatar uploaded successfully!' ) );
+
 					this.setState( {
 						isUploading: false
 					} );
 				} )
 				.catch( error => {
 					console.log( 'error', error );
+
+					errorNotice( translate( 'New Gravatar was not saved.' ) );
+
 					this.setState( {
 						isUploading: false
 					} );
@@ -119,5 +128,6 @@ export default connect(
 	state => ( {
 		user: getCurrentUser( state ),
 		isOffline: isOffline( state ),
-	} )
+	} ),
+	dispatch => bindActionCreators( { successNotice, errorNotice }, dispatch )
 )( localize ( GravatarUpdater ) );
