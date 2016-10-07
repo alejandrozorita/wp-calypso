@@ -2,6 +2,7 @@
  * External dependencies
  */
 import React, { Component, PropTypes } from 'react';
+import classnames from 'classnames';
 import { connect } from 'react-redux';
 import request from 'superagent';
 
@@ -15,11 +16,13 @@ import { getCurrentUser } from 'state/current-user/selectors';
 import Gravatar from 'components/gravatar';
 import { isOffline } from 'state/application/selectors';
 import { localize } from 'i18n-calypso';
+import Spinner from 'components/spinner';
 import * as OAuthToken from 'lib/oauth-token';
 
 export class GravatarUpdater extends Component {
 	constructor() {
 		super();
+		this.state = { isUploading: false };
 		this.handleOnPick = this.handleOnPick.bind( this );
 	}
 
@@ -42,21 +45,29 @@ export class GravatarUpdater extends Component {
 		// send gravatar request
 		if ( bearerToken ) {
 			console.log( 'Got the bearerToken, sending request' );
+			this.setState( {
+				isUploading: true
+			} );
 
 			const data = new FormData();
 			data.append( 'filedata', files[0] );
 			data.append( 'account', this.props.user.email );
-
 			request
 				.post( 'https://api.gravatar.com/v1/upload-image' )
 				.send( data )
 				.set( 'Authorization', 'Bearer ' + bearerToken )
 				.set( 'Accept-Language', '*' )
-				.then( function ( result ) {
+				.then( result => {
 					console.log( 'result', result );
+					this.setState( {
+						isUploading: false
+					} );
 				} )
-				.catch( function ( error ) {
+				.catch( error => {
 					console.log( 'error', error );
+					this.setState( {
+						isUploading: false
+					} );
 				} );
 		} else {
 			console.log( 'Oops - no bearer token.' );
@@ -73,17 +84,29 @@ export class GravatarUpdater extends Component {
 						}
 					) }
 				</FormLabel>
-				<Gravatar
-					imgSize={ 270 }
-					size={ 100 }
-					user={ user }
-				/>
+				<div
+					className={ classnames( 'gravatar-updater__image-container',
+						{ 'is-uploading': this.state.isUploading }
+					) }
+				>
+					<Gravatar
+						imgSize={ 270 }
+						size={ 100 }
+						user={ user }
+					/>
+					{ this.state.isUploading &&
+						<Spinner className='gravatar-updater__spinner' /> }
+				</div>
 				<p>
 					{ translate( 'To change, select an image or ' +
 					'drag and drop a picture from your computer.' ) }
 				</p>
 				<FilePicker accept="image/*" onPick={ this.handleOnPick }>
-					<Button disabled={ isOffline || ! user.email_verified }>
+					<Button
+						disabled={ isOffline ||
+							this.state.isUploading ||
+							! user.email_verified }
+					>
 						{ translate( 'Select Image' ) }
 					</Button>
 				</FilePicker>

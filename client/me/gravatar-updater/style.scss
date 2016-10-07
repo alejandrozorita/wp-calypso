@@ -1,0 +1,23 @@
+.gravatar-updater__image-container {
+	display: inline-block;
+	position: relative;
+	line-height: 0;
+
+	&.is-uploading::after {
+		content: '';
+		position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+		background-color: rgba( $white, 0.75 );
+	}
+}
+
+.gravatar-updater__spinner {
+	position: absolute;
+		top: 50%;
+		left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: z-index( '.gravatar-updater__gravatar-container', '.gravatar-updater__spinner' );
+}
