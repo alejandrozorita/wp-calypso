@@ -2,7 +2,6 @@
  * External dependencies
  */
 import React, { Component, PropTypes } from 'react';
-import { bindActionCreators } from 'redux';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
 import request from 'superagent';
@@ -129,5 +128,8 @@ export default connect(
 		user: getCurrentUser( state ),
 		isOffline: isOffline( state ),
 	} ),
-	dispatch => bindActionCreators( { successNotice, errorNotice }, dispatch )
+	{
+		successNotice,
+		errorNotice,
+	}
 )( localize ( GravatarUpdater ) );
