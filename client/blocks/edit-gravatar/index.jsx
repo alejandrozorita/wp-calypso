@@ -28,8 +28,8 @@ export class EditGravatar extends Component {
 	}
 
 	static propTypes = {
-		isOffline: React.PropTypes.bool,
-		translate: React.PropTypes.func,
+		isOffline: PropTypes.bool,
+		translate: PropTypes.func,
 		user: PropTypes.object,
 	};
 
