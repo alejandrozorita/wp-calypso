@@ -134,3 +134,7 @@ export function isCurrentUserEmailVerified( state ) {
 
 	return user.email_verified || false;
 }
+
+export function isCurrentUserUploadingGravatar( state ) {
+	return state.currentUser.gravatarStatus.isUploading || false;
+}

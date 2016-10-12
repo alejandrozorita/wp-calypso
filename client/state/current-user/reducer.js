@@ -13,10 +13,18 @@ import {
 	SITE_RECEIVE,
 	SITE_PLANS_FETCH_COMPLETED,
 	SITES_RECEIVE,
-	PLANS_RECEIVE
+	PLANS_RECEIVE,
+	GRAVATAR_UPLOAD_START,
+	GRAVATAR_UPLOAD_SUCCESS,
+	GRAVATAR_UPLOAD_FAILURE
 } from 'state/action-types';
 import { createReducer } from 'state/utils';
-import { idSchema, capabilitiesSchema, currencyCodeSchema, flagsSchema } from './schema';
+import { idSchema,
+	capabilitiesSchema,
+	currencyCodeSchema,
+	flagsSchema,
+	gravatarSchema
+} from './schema';
 
 /**
  * Tracks the current user ID.
@@ -82,9 +90,28 @@ export const capabilities = createReducer( {}, {
 	}
 }, capabilitiesSchema );
 
+export const gravatarStatus = createReducer( {}, {
+	[ GRAVATAR_UPLOAD_START ]: state => {
+		return Object.assign( {}, state, {
+			isUploading: true
+		} );
+	},
+	[ GRAVATAR_UPLOAD_SUCCESS ]: state => {
+		return Object.assign( {}, state, {
+			isUploading: false
+		} );
+	},
+	[ GRAVATAR_UPLOAD_FAILURE ]: state => {
+		return Object.assign( {}, state, {
+			isUploading: false
+		} );
+	},
+}, gravatarSchema );
+
 export default combineReducers( {
 	id,
 	currencyCode,
 	capabilities,
-	flags
+	flags,
+	gravatarStatus
 } );

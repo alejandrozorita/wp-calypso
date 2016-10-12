@@ -39,3 +39,11 @@ export const capabilitiesSchema = {
 export const flagsSchema = {
 	type: 'array'
 };
+
+export const gravatarSchema = {
+	type: [ 'object', 'null' ],
+	additionalProperties: false,
+	properties: {
+		isUploading: { type: 'boolean' }
+	}
+};
