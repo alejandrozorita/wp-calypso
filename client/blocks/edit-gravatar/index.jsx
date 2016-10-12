@@ -20,7 +20,7 @@ import { localize } from 'i18n-calypso';
 import Spinner from 'components/spinner';
 import * as OAuthToken from 'lib/oauth-token';
 
-export class GravatarUpdater extends Component {
+export class EditGravatar extends Component {
 	constructor() {
 		super();
 		this.state = { isUploading: false };
@@ -132,4 +132,4 @@ export default connect(
 		successNotice,
 		errorNotice,
 	}
-)( localize ( GravatarUpdater ) );
+)( localize ( EditGravatar ) );
