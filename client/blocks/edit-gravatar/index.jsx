@@ -66,7 +66,7 @@ export class EditGravatar extends Component {
 					) }
 				</FormLabel>
 				<div
-					className={ classnames( 'gravatar-updater__image-container',
+					className={ classnames( 'edit-gravatar__image-container',
 						{ 'is-uploading': isUploading }
 					) }
 				>
@@ -75,7 +75,7 @@ export class EditGravatar extends Component {
 						size={ 100 }
 						user={ user }
 					/>
-					{ isUploading && <Spinner className='gravatar-updater__spinner' /> }
+					{ isUploading && <Spinner className="edit-gravatar__spinner" /> }
 				</div>
 				<p>
 					{ translate( 'To change, select an image or ' +

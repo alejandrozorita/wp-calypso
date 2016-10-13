@@ -65,6 +65,7 @@ $z-layers: (
 		'.signup-processing-screen__processing-step.is-processing:before': 1,
 		'.accessible-focus .theme__more-button button:focus': 1,
 		'.domain-suggestion.is-clickable:hover': 1,
+		'.edit-gravatar__spinner': 1,
 		'.reader-update-notice': 2,
 		'.people-list-item .card__link-indicator': 2,
 		'.updated-confirmation': 2,
@@ -137,8 +138,7 @@ $z-layers: (
 		'.fullscreen-fader': 200000,
 		'.guided-tours__overlay': 200050,
 		'.guided-tours__step': 201000,
-		'#habla_window_div.habla_window_div_base': 99999999, //olark
-		'.gravatar-updater__spinner': 1
+		'#habla_window_div.habla_window_div_base': 99999999 //olark
 	),
 	'.ribbon': (
 		'.ribbon__title::before': -1,
