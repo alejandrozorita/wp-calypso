@@ -24,7 +24,7 @@ import { uploadGravatar } from 'state/current-user/actions';
 
 export class EditGravatar extends Component {
 	constructor() {
-		super();
+		super( ...arguments );
 		this.handleOnPick = this.handleOnPick.bind( this );
 	}
 
