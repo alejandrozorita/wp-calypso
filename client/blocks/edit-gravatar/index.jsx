@@ -19,7 +19,7 @@ import Gravatar from 'components/gravatar';
 import { isOffline } from 'state/application/selectors';
 import { localize } from 'i18n-calypso';
 import Spinner from 'components/spinner';
-import * as OAuthToken from 'lib/oauth-token';
+import { getToken as getOauthToken } from 'lib/oauth-token';
 import { uploadGravatar } from 'state/current-user/actions';
 
 export class EditGravatar extends Component {
@@ -40,7 +40,7 @@ export class EditGravatar extends Component {
 		console.log( 'you picked', JSON.stringify( files[ 0 ].name ) );
 
 		// check for bearerToken from desktop app
-		let bearerToken = OAuthToken.getToken();
+		let bearerToken = getOauthToken();
 
 		if ( ! bearerToken ) {
 			bearerToken = localStorage.getItem( 'bearerToken' );
