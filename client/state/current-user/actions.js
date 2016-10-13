@@ -12,8 +12,6 @@ import { CURRENT_USER_ID_SET,
 	GRAVATAR_UPLOAD_SUCCESS,
 	GRAVATAR_UPLOAD_FAILURE
 } from 'state/action-types';
-import { translate } from 'i18n-calypso';
-import { successNotice, errorNotice } from 'state/notices/actions';
 
 /**
  * Returns an action object to be used in signalling that the current user ID
@@ -48,13 +46,9 @@ export function uploadGravatar( file, bearerToken, email ) {
 			.set( 'Authorization', 'Bearer ' + bearerToken )
 			.set( 'Accept-Language', '*' )
 			.then( () => {
-				dispatch( successNotice(
-					translate( 'New Gravatar uploaded successfully!' ) ) );
 				dispatch( gravatarUploadSuccess() );
 			} )
 			.catch( () => {
-				dispatch( errorNotice(
-					translate( 'New Gravatar was not saved.' ) ) );
 				dispatch( gravatarUploadFailure() );
 			} );
 	};

@@ -10,6 +10,8 @@ import { truncate } from 'lodash';
 import { successNotice, errorNotice } from 'state/notices/actions';
 import { getSitePost } from 'state/posts/selectors';
 import {
+	GRAVATAR_UPLOAD_FAILURE,
+	GRAVATAR_UPLOAD_SUCCESS,
 	GUIDED_TRANSFER_HOST_DETAILS_SAVE_SUCCESS,
 	POST_DELETE_FAILURE,
 	POST_DELETE_SUCCESS,
@@ -87,6 +89,8 @@ export function onPostSaveSuccess( dispatch, action ) {
  */
 
 export const handlers = {
+	[ GRAVATAR_UPLOAD_FAILURE ]: dispatchError( translate( 'New Gravatar was not saved.' ) ),
+	[ GRAVATAR_UPLOAD_SUCCESS ]: dispatchSuccess( translate( 'New Gravatar uploaded successfully!' ) ),
 	[ POST_DELETE_FAILURE ]: onPostDeleteFailure,
 	[ POST_DELETE_SUCCESS ]: dispatchSuccess( translate( 'Post successfully deleted' ) ),
 	[ POST_RESTORE_FAILURE ]: onPostRestoreFailure,
