@@ -32,12 +32,11 @@ export class EditGravatar extends Component {
 		isOffline: PropTypes.bool,
 		translate: PropTypes.func,
 		user: PropTypes.object,
-		dispatch: PropTypes.func,
 		isUploading: PropTypes.bool,
 	};
 
 	handleOnPick( files ) {
-		const { dispatch, user } = this.props;
+		const { uploadGravatar: uploadGravatarAction, user } = this.props;
 		console.log( 'you picked',  JSON.stringify( files[0].name ) );
 
 		// check for bearerToken from desktop app
@@ -50,7 +49,7 @@ export class EditGravatar extends Component {
 		// send gravatar request
 		if ( bearerToken ) {
 			console.log( 'Got the bearerToken, sending request' );
-			dispatch( uploadGravatar( files[ 0 ], bearerToken, user.email ) );
+			uploadGravatarAction( files[ 0 ], bearerToken, user.email );
 		} else {
 			console.log( 'Oops - no bearer token.' );
 		}
@@ -99,5 +98,6 @@ export default connect(
 		user: getCurrentUser( state ),
 		isOffline: isOffline( state ),
 		isUploading: isCurrentUserUploadingGravatar( state ),
-	} )
+	} ),
+	{ uploadGravatar }
 )( localize ( EditGravatar ) );
