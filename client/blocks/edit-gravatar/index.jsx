@@ -37,7 +37,7 @@ export class EditGravatar extends Component {
 
 	handleOnPick( files ) {
 		const { uploadGravatar: uploadGravatarAction, user } = this.props;
-		console.log( 'you picked',  JSON.stringify( files[0].name ) );
+		console.log( 'you picked', JSON.stringify( files[ 0 ].name ) );
 
 		// check for bearerToken from desktop app
 		let bearerToken = OAuthToken.getToken();
@@ -56,13 +56,14 @@ export class EditGravatar extends Component {
 	}
 
 	render() {
-		const { isOffline, translate, user, isUploading } = this.props;
+		const { isOffline: userIsOffline,
+			translate, user, isUploading } = this.props;
 		return (
 			<div>
 				<FormLabel>
 					{ translate( 'Avatar', {
-							comment: 'A section heading on the profile page.'
-						}
+						comment: 'A section heading on the profile page.'
+					}
 					) }
 				</FormLabel>
 				<div
@@ -83,7 +84,7 @@ export class EditGravatar extends Component {
 				</p>
 				<FilePicker accept="image/*" onPick={ this.handleOnPick }>
 					<Button
-						disabled={ isOffline || isUploading || ! user.email_verified }
+						disabled={ userIsOffline || isUploading || ! user.email_verified }
 					>
 						{ translate( 'Select Image' ) }
 					</Button>
@@ -100,4 +101,4 @@ export default connect(
 		isUploading: isCurrentUserUploadingGravatar( state ),
 	} ),
 	{ uploadGravatar }
-)( localize ( EditGravatar ) );
+)( localize( EditGravatar ) );
