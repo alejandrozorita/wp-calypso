@@ -22,8 +22,7 @@ import { createReducer } from 'state/utils';
 import { idSchema,
 	capabilitiesSchema,
 	currencyCodeSchema,
-	flagsSchema,
-	gravatarSchema
+	flagsSchema
 } from './schema';
 
 /**
@@ -106,7 +105,7 @@ export const gravatarStatus = createReducer( {}, {
 			isUploading: false
 		} );
 	},
-}, gravatarSchema );
+} );
 
 export default combineReducers( {
 	id,
