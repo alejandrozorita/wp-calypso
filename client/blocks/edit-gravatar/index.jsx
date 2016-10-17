@@ -11,16 +11,16 @@ import { connect } from 'react-redux';
 import Button from 'components/button';
 import FilePicker from 'components/file-picker';
 import FormLabel from 'components/forms/form-label';
+import { getCurrentUser } from 'state/current-user/selectors';
 import {
-	getCurrentUser,
-	isCurrentUserUploadingGravatar
-} from 'state/current-user/selectors';
+	isCurrentUserUploadingGravatar,
+} from 'state/current-user/gravatar-status/selectors';
 import Gravatar from 'components/gravatar';
 import { isOffline } from 'state/application/selectors';
 import { localize } from 'i18n-calypso';
 import Spinner from 'components/spinner';
 import { getToken as getOauthToken } from 'lib/oauth-token';
-import { uploadGravatar } from 'state/current-user/actions';
+import { uploadGravatar } from 'state/current-user/gravatar-status/actions';
 
 export class EditGravatar extends Component {
 	constructor() {
