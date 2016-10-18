@@ -20,7 +20,6 @@ export function uploadGravatar( file, bearerToken, email ) {
 			.post( 'https://api.gravatar.com/v1/upload-image' )
 			.send( data )
 			.set( 'Authorization', 'Bearer ' + bearerToken )
-			.set( 'Accept-Language', '*' )
 			.then( () => {
 				dispatch( {
 					type: GRAVATAR_UPLOAD_RECEIVE
