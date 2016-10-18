@@ -25,6 +25,7 @@ import Card from 'components/card';
 import observe from 'lib/mixins/data-observe';
 import eventRecorder from 'me/event-recorder';
 import Main from 'components/main';
+import { isEnabled } from 'config';
 
 const debug = debugFactory( 'calypso:me:profile' );
 
@@ -77,7 +78,7 @@ export default React.createClass( {
 						) }
 					</p>
 
-					<EditGravatar />
+					{ isEnabled( 'me/edit-gravatar' ) && <EditGravatar /> }
 
 					<form onSubmit={ this.submitForm } onChange={ this.markChanged }>
 						<FormFieldset>
