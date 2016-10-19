@@ -23,20 +23,23 @@ class GuidedTours extends Component {
 		return this.props.tourState !== nextProps.tourState;
 	}
 
-	next = ( { tour, tourVersion, nextStepName, skipping = false } ) => {
-		// Don't immediately record the transition to the next step. Instead,
-		// remember the name of the step and _maybe_ record it later (at the
-		// next invokation of `next` or `quit`), depending on whether the step
-		// was skipped (see Step#skipIfInvalidContext).
-		if ( ! skipping && this.currentStepName ) {
-			tracks.recordEvent( 'calypso_guided_tours_next', {
+	start = ( { tour, tourVersion: tour_version } ) => {
+		if ( tour && tour_version ) {
+			tracks.recordEvent( 'calypso_guided_tours_start', {
 				tour,
-				step: this.currentStepName,
+				tour_version,
+			} );
+		}
+	}
+
+	next = ( { step, tour, tourVersion, nextStepName, skipping = false } ) => {
+		if ( ! skipping && step ) {
+			tracks.recordEvent( 'calypso_guided_tours_seen_step', {
+				tour,
+				step,
 				tour_version: tourVersion,
 			} );
 		}
-
-		this.currentStepName = nextStepName;
 
 		defer( () => {
 			this.props.nextGuidedTourStep( {
@@ -46,25 +49,24 @@ class GuidedTours extends Component {
 		} );
 	}
 
-	quit = ( { step, tour, tourVersion, isLastStep } ) => {
-		if ( this.currentStepName ) {
-			tracks.recordEvent( 'calypso_guided_tours_next', {
+	quit = ( { step, tour, tourVersion: tour_version, isLastStep } ) => {
+		if ( step ) {
+			tracks.recordEvent( 'calypso_guided_tours_seen_step', {
 				tour,
-				step: this.currentStepName,
-				tour_version: tourVersion,
+				step,
+				tour_version,
 			} );
-			this.currentStepName = null;
 		}
 
 		tracks.recordEvent( `calypso_guided_tours_${ isLastStep ? 'finished' : 'quit' }`, {
 			step,
 			tour,
-			tour_version: tourVersion,
+			tour_version,
 		} );
 
 		this.props.quitGuidedTour( {
 			tour,
-			stepName: this.props.tourState.stepName,
+			stepName: step,
 			finished: isLastStep,
 		} );
 	}
@@ -92,7 +94,8 @@ class GuidedTours extends Component {
 							lastAction={ this.props.lastAction }
 							isValid={ this.props.isValid }
 							next={ this.next }
-							quit={ this.quit } />
+							quit={ this.quit }
+							start={ this.start } />
 				</div>
 			</RootChild>
 		);

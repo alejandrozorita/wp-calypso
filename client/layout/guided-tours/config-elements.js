@@ -51,6 +51,7 @@ const contextTypes = Object.freeze( {
 	branching: PropTypes.object.isRequired,
 	next: PropTypes.func.isRequired,
 	quit: PropTypes.func.isRequired,
+	start: PropTypes.func.isRequired,
 	isValid: PropTypes.func.isRequired,
 	isLastStep: PropTypes.bool.isRequired,
 	tour: PropTypes.string.isRequired,
@@ -108,6 +109,7 @@ export class Step extends Component {
 	static contextTypes = contextTypes;
 
 	componentWillMount() {
+		this.start();
 		this.setStepSection( this.context, { init: true } );
 		debug( 'Step#componentWillMount: stepSection:', this.stepSection );
 		this.skipIfInvalidContext( this.props, this.context );
@@ -133,14 +135,14 @@ export class Step extends Component {
 	componentWillUnmount() {
 		global.window.removeEventListener( 'resize', this.onScrollOrResize );
 		this.scrollContainer.removeEventListener( 'scroll', this.onScrollOrResize );
+	}
 
-		// FIXME(mcsf): I don't think the following makes sense anymore:
-		//
-		//const { quit, step, tour, tourVersion, isLastStep } = this.context;
-		//if ( isLastStep ) {
-		//	debug( 'Auto-quitting after last step' );
-		//	quit( { step, tour, tour_version: tourVersion, isLastStep } );
-		//}
+	/*
+	 * Needed for analytics, since GT is selector-driven
+	 */
+	start() {
+		const { start, tour, tourVersion } = this.context;
+		start( { tour, tourVersion } );
 	}
 
 	/*
@@ -204,7 +206,7 @@ export class Step extends Component {
 				this.isDifferentSection( lastAction.path ) ) {
 			defer( () => {
 				debug( 'Step.quitIfInvalidRoute: quitting' );
-				this.context.quit();
+				this.context.quit( this.context );
 			} );
 		} else {
 			debug( 'Step.quitIfInvalidRoute: not quitting' );
@@ -221,7 +223,7 @@ export class Step extends Component {
 		const { branching, isValid, next, step, tour, tourVersion } = context;
 		if ( when && ! isValid( when ) ) {
 			const nextStepName = objFirst( branching[ step ] );
-			next( { tour, tourVersion, nextStepName, skipping: true } );
+			next( { tour, tourVersion, step, nextStepName, skipping: true } );
 		}
 	}
 
@@ -285,9 +287,9 @@ export class Next extends Component {
 	}
 
 	onClick = () => {
-		const { next, tour, tourVersion } = this.context;
+		const { next, tour, tourVersion, step } = this.context;
 		const { step: nextStepName } = this.props;
-		next( { tour, tourVersion, nextStepName } );
+		next( { tour, tourVersion, step, nextStepName } );
 	}
 
 	render() {
@@ -375,7 +377,7 @@ export class Continue extends Component {
 			// quit if we have a target but cant find it
 			if ( props.target && ! target ) {
 				debug( 'Continue.quitIfInvalidRoute: quitting' );
-				quit();
+				quit( this.context );
 			} else {
 				debug( 'Continue.quitIfInvalidRoute: not quitting' );
 			}
@@ -383,9 +385,9 @@ export class Continue extends Component {
 	}
 
 	onContinue = () => {
-		const { next, tour, tourVersion } = this.context;
+		const { next, tour, tourVersion, step } = this.context;
 		const { step: nextStepName } = this.props;
-		next( { tour, tourVersion, nextStepName } );
+		next( { tour, tourVersion, step, nextStepName } );
 	}
 
 	addTargetListener() {
@@ -469,6 +471,7 @@ export const makeTour = tree => {
 				lastAction,
 				next,
 				quit,
+				start,
 				sectionName,
 				shouldPause,
 				stepName,
@@ -476,7 +479,7 @@ export const makeTour = tree => {
 			const step = stepName;
 			const branching = tourBranching( tree );
 			this.tourMeta = {
-				next, quit, isValid, lastAction, sectionName, shouldPause,
+				next, quit, start, isValid, lastAction, sectionName, shouldPause,
 				step,
 				branching,
 				isLastStep: this.isLastStep( { step, branching } ),
