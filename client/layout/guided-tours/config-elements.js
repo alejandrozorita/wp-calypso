@@ -134,11 +134,13 @@ export class Step extends Component {
 		global.window.removeEventListener( 'resize', this.onScrollOrResize );
 		this.scrollContainer.removeEventListener( 'scroll', this.onScrollOrResize );
 
-		const { quit, step, tour, tourVersion, isLastStep } = this.context;
-		if ( isLastStep ) {
-			debug( 'Auto-quitting after last step' );
-			quit( { step, tour, tour_version: tourVersion, isLastStep } );
-		}
+		// FIXME(mcsf): I don't think the following makes sense anymore:
+		//
+		//const { quit, step, tour, tourVersion, isLastStep } = this.context;
+		//if ( isLastStep ) {
+		//	debug( 'Auto-quitting after last step' );
+		//	quit( { step, tour, tour_version: tourVersion, isLastStep } );
+		//}
 	}
 
 	/*
